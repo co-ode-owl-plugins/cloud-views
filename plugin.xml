@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 0.4" "http://jpf.sourceforge.net/plugin_0_4.dtd">
 
-<plugin id="org.coode.cloud" version="1.0.5.TagView">
+<plugin id="org.coode.cloud" version="1.0.2.Cloud">
 
     <attributes>
-        <attribute id="update-url" value="http://www.co-ode.org/downloads/protege-x/tagview-plugin.xml"/>
+        <attribute id="update-url" value="http://co-ode-owl-plugins.googlecode.com/svn/trunk/cloud/update.xml"/>
     </attributes>
 
     <requires>
@@ -13,7 +13,7 @@
     </requires>
 
     <runtime>
-        <library id="TagView" path="./" type="code">
+        <library id="Cloud" path="classes/" type="code">
             <export prefix="*"/>
         </library>
     </runtime>

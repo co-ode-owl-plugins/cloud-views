@@ -1,0 +1,5 @@
+<plugin version="1.0.2.Cloud">
+	<download url="http://co-ode-owl-plugins.googlecode.com/files/org.coode.cloud.zip"/>
+ 	<website url="http://www.co-ode.org/downloads/protege-x/plugins.php#cloud"/>
+	<readme url="http://www.co-ode.org/downloads/protege-x/readme.txt"/>
+</plugin>
