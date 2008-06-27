@@ -3,6 +3,7 @@ package org.coode.cloud.view;
 import org.coode.cloud.model.OWLCloudModel;
 import org.coode.cloud.ui.CloudComponent;
 import org.coode.cloud.ui.CloudSwingComponent;
+import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.core.ui.util.Icons;
 import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.model.event.EventType;
@@ -304,7 +305,7 @@ public abstract class AbstractCloudView<O extends OWLEntity> extends AbstractOWL
                 printJob.print();
             }
             catch(PrinterException pe) {
-                System.out.println("Error printing: " + pe);
+                ProtegeApplication.getErrorLog().handleError(Thread.currentThread(), pe);
             }
         }
     }

@@ -7,8 +7,8 @@ import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLOntologyChangeListener;
 import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owl.model.OWLOntologyChangeListener;
 
 import java.util.List;
 
@@ -107,7 +107,7 @@ public abstract class AbstractOWLCloudModel<O extends OWLEntity> extends Abstrac
     protected abstract int getValueForEntity(O entity) throws OWLException;
 
     public String getRendering(O entity) {
-        return mngr.getOWLEntityRenderer().render(entity);
+        return mngr.getRendering(entity);
     }
 
     public O getEntity(String text) {
