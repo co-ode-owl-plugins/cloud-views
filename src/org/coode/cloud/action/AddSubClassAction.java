@@ -1,9 +1,9 @@
 package org.coode.cloud.action;
 
-import org.protege.editor.owl.ui.OWLIcons;
-import org.protege.editor.owl.ui.view.OWLSelectionViewAction;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.entity.OWLEntityCreationSet;
+import org.protege.editor.owl.ui.OWLIcons;
+import org.protege.editor.owl.ui.view.OWLSelectionViewAction;
 import org.semanticweb.owl.model.*;
 
 import java.awt.event.ActionEvent;
@@ -59,19 +59,19 @@ public class AddSubClassAction extends OWLSelectionViewAction {
             if (cls == null) {
                 return;
             }
-            OWLEntityCreationSet<OWLClass> creationSet = eKit.getOWLWorkspace().createOWLClass();
+            OWLEntityCreationSet<OWLClass> creationSet = eKit.getWorkspace().createOWLClass();
             if (creationSet == null) {
                 return;
             }
             List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>(creationSet.getOntologyChanges());
             // Add the required change to add the subclass relationship
 
-            final OWLDataFactory df = eKit.getOWLModelManager().getOWLDataFactory();
+            final OWLDataFactory df = eKit.getModelManager().getOWLDataFactory();
             OWLAxiom axiom = df.getOWLSubClassAxiom(creationSet.getOWLEntity(), cls);
 
-            changes.add(new AddAxiom(eKit.getOWLModelManager().getActiveOntology(), axiom));
+            changes.add(new AddAxiom(eKit.getModelManager().getActiveOntology(), axiom));
 
-            eKit.getOWLModelManager().applyChanges(changes);
+            eKit.getModelManager().applyChanges(changes);
 
             // Select the new class
             eKit.getWorkspace().getOWLSelectionModel().setSelectedEntity(creationSet.getOWLEntity());
@@ -83,7 +83,7 @@ public class AddSubClassAction extends OWLSelectionViewAction {
             setEnabled(false);
         }
         else {
-                OWLClass thing = eKit.getOWLModelManager().getOWLDataFactory().getOWLThing();
+                OWLClass thing = eKit.getModelManager().getOWLDataFactory().getOWLThing();
                 setEnabled(!selection.equals(thing));
         }
     }
