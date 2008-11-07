@@ -6,10 +6,11 @@ Bundle-Category: protege
 Bundle-Description: Tag Clouds but for ontologies (various metrics implemented)
 Bundle-Vendor: The CO-ODE Group
 Bundle-DocURL: http://www.co-ode.org
+Update-Url: http://co-ode-owl-plugins.googlecode.com/svn/trunk/cloud/update.properties
 Bundle-ClassPath: .
 Import-Package: org.osgi.framework,
  org.apache.log4j
-Bundle-Version: 1.0.6
+Bundle-Version: 1.0.8
 Bundle-Activator: org.protege.editor.core.plugin.DefaultPluginActivator
 Require-Bundle: org.eclipse.equinox.registry,
  org.eclipse.equinox.common,

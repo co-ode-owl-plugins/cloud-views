@@ -1,0 +1,11 @@
+Wondering about the "shape" of your ontology? Several implementations of the popular TagCloud can give you insight into different aspects of your ontology - ratings are based on different criteria (eg class usage, depth in hierarchy etc). The bigger the name, the higher the rating. Sort alphabetically or by rating, and filter out low ranking entities easilly.
+
+
+Version info
+------------
+
+v1.0.8 (7th Nov 2008)
+- auto-update activated
+
+
+See also: http://www.co-ode.org/downloads/protege-x/plugins/#cloud
