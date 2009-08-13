@@ -4,9 +4,9 @@ import org.coode.cloud.model.AbstractClassCloudModel;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.*;
 
@@ -70,7 +70,7 @@ public class IntervalRank extends AbstractClassCloudView {
         }
 
         public void activeOntologiesChanged(Set<OWLOntology> ontologies) throws OWLException {
-            provider = getOWLModelManager().getOWLClassHierarchyProvider();
+            provider = getOWLModelManager().getOWLHierarchyManager().getOWLClassHierarchyProvider();
             heights =       new HashMap<OWLClass, Integer>();
             depths =        new HashMap<OWLClass, Integer>();
             intervalRanks = new HashMap<OWLClass, Integer>();
@@ -196,12 +196,6 @@ public class IntervalRank extends AbstractClassCloudView {
         public void resetNextClassCount() {
             alreadyReturned.clear();
         }
-
-        /** Removes the given class from the lock list. The given class was locked by a user, so there is no point in
-         * continuing to return it to other users who will inevitably be unable to lock it.
-         * WRONG: since some locked class might be lockable by other users with different types of locks*/
-        /*public void removeNewlyLockedClassFromList(OWLClass cls) {
-       } */
     }
 }
 

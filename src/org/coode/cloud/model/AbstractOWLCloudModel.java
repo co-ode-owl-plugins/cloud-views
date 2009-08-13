@@ -5,10 +5,10 @@ import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.OWLOntologyChangeListener;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
 
 import java.util.List;
 
@@ -111,7 +111,7 @@ public abstract class AbstractOWLCloudModel<O extends OWLEntity> extends Abstrac
     }
 
     public O getEntity(String text) {
-        return (O)mngr.getOWLEntity(text);
+        return (O)mngr.getOWLEntityFinder().getOWLEntity(text);
     }
 
     public void dispose() {

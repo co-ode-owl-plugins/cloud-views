@@ -4,7 +4,7 @@ import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.entity.OWLEntityCreationSet;
 import org.protege.editor.owl.ui.OWLIcons;
 import org.protege.editor.owl.ui.view.OWLSelectionViewAction;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class AddSubClassAction extends OWLSelectionViewAction {
             // Add the required change to add the subclass relationship
 
             final OWLDataFactory df = eKit.getModelManager().getOWLDataFactory();
-            OWLAxiom axiom = df.getOWLSubClassAxiom(creationSet.getOWLEntity(), cls);
+            OWLAxiom axiom = df.getOWLSubClassOfAxiom(creationSet.getOWLEntity(), cls);
 
             changes.add(new AddAxiom(eKit.getModelManager().getActiveOntology(), axiom));
 

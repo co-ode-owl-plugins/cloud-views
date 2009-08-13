@@ -1,7 +1,7 @@
 package org.coode.cloud.model;
 
-import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Set;
 

@@ -2,19 +2,22 @@ package org.coode.cloud.view;
 
 import org.coode.cloud.model.OWLCloudModel;
 import org.coode.cloud.ui.CloudComponent;
+import org.coode.cloud.ui.CloudHTMLRenderer;
 import org.coode.cloud.ui.CloudSwingComponent;
+import org.protege.editor.core.FileUtils;
 import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.core.ui.util.Icons;
+import org.protege.editor.core.ui.util.UIUtil;
 import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
-import org.protege.editor.owl.ui.OWLEntityComparator;
 import org.protege.editor.owl.ui.renderer.OWLEntityRenderer;
 import org.protege.editor.owl.ui.renderer.OWLEntityRendererListener;
 import org.protege.editor.owl.ui.view.AbstractOWLSelectionViewComponent;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLObject;
+import org.protege.editor.owl.ui.OWLObjectComparator;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObject;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -25,7 +28,13 @@ import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -68,7 +77,7 @@ public abstract class AbstractCloudView<O extends OWLEntity> extends AbstractOWL
     private static final int MIN_ZOOM_MIN_SIZE = 1;
 
     // for ordering of the entities
-    private Comparator<O> alphaComparator;
+    private Comparator<? super O> alphaComparator;
     private Comparator<O> scoreComparator;
 
     private OWLCloudModel<O> model;
@@ -161,6 +170,20 @@ public abstract class AbstractCloudView<O extends OWLEntity> extends AbstractOWL
                 }
             };
 
+
+    private DisposableAction exportAction = new DisposableAction("Export",
+                                                                 Icons.getIcon("project.save.gif")){
+
+        public void dispose() {
+        }
+
+
+        public void actionPerformed(ActionEvent event) {
+            handleExport();
+        }
+    };
+
+
     private DisposableAction printAction =
             new DisposableAction("Print",
                                  new ImageIcon(AbstractCloudView.class.getResource("Print16.gif"))){
@@ -178,6 +201,7 @@ public abstract class AbstractCloudView<O extends OWLEntity> extends AbstractOWL
         }
     };
 
+
     public void initialiseView() throws Exception {
 
         setLayout(new BorderLayout(6, 6));
@@ -190,9 +214,9 @@ public abstract class AbstractCloudView<O extends OWLEntity> extends AbstractOWL
         cloudComponent.addSelectionListener(selectionListener);
         cloudComponent.setZoom(4);
 
-        alphaComparator = new OWLEntityComparator<O>(getOWLModelManager());
+        alphaComparator = getOWLModelManager().getOWLObjectComparator();
         scoreComparator = model.getComparator();
-        cloudComponent.setComparator(alphaComparator);
+        cloudComponent.setComparator(getOWLModelManager().getOWLObjectComparator());
 
         sliderPanel = createSliderPanel();
         add(sliderPanel, BorderLayout.NORTH);
@@ -202,7 +226,8 @@ public abstract class AbstractCloudView<O extends OWLEntity> extends AbstractOWL
 
         addAction(sortAction, "D", "A");
         addAction(normaliseAction, "D", "B");
-        addAction(printAction, "E", "A");
+        addAction(exportAction, "E", "A");
+        addAction(printAction, "E", "B");
 
         // add listeners
         getOWLModelManager().getOWLEntityRenderer().addListener(rendererListener);
@@ -295,6 +320,38 @@ public abstract class AbstractCloudView<O extends OWLEntity> extends AbstractOWL
         getOWLModelManager().removeListener(modelManagerListener);
 
         removeHierarchyListener(componentHierarchyListener);
+    }
+
+
+    private void handleExport() {
+        try {
+            Set<String> extensions = new HashSet<String>();
+            extensions.add("html");
+            String fileName = "cloud.html";
+            File f = UIUtil.saveFile((Window) SwingUtilities.getAncestorOfClass(Window.class, this),
+                                     "Save cloud to",
+                                     extensions,
+                                     fileName);
+            if (f != null) {
+                f.getParentFile().mkdirs();
+                FileWriter out = new FileWriter(f);
+                BufferedWriter bufferedWriter = new BufferedWriter(out);
+
+                CloudHTMLRenderer<O> ren = new CloudHTMLRenderer<O>(model);
+                ren.setComparator(cloudComponent.getComparator());
+                ren.setNormalise(cloudComponent.isNormalised());
+                ren.setThreshold(cloudComponent.getThreshold());
+                ren.setZoom(cloudComponent.getZoom());
+                ren.render(bufferedWriter);
+
+                out.close();
+
+                FileUtils.showFile(f);
+            }
+        }
+        catch (IOException e) {
+            ProtegeApplication.getErrorLog().handleError(Thread.currentThread(), e);
+        }
     }
 
     private void printContent() {

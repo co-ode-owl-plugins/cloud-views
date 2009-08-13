@@ -1,12 +1,11 @@
 package org.coode.cloud.view;
 
 import org.coode.cloud.model.AbstractClassCloudModel;
-import org.coode.cloud.view.AbstractClassCloudView;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Set;
 
@@ -55,7 +54,7 @@ public class ClassesByDepth extends AbstractClassCloudView {
         }
 
         protected int getValueForEntity(OWLClass entity) throws OWLException {
-            Set<OWLClass> ancestors = getOWLModelManager().getOWLClassHierarchyProvider().getAncestors(entity);
+            Set<OWLClass> ancestors = getOWLModelManager().getOWLHierarchyManager().getOWLClassHierarchyProvider().getAncestors(entity);
             return ancestors.size();
         }
 

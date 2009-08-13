@@ -4,16 +4,17 @@ Bundle-Name: Cloud Views
 Bundle-SymbolicName: org.coode.cloud;singleton:=true
 Bundle-Category: protege
 Bundle-Description: Tag Clouds but for ontologies (various metrics implemented)
-Bundle-Vendor: The CO-ODE Group
-Bundle-DocURL: http://www.co-ode.org
-Update-Url: http://co-ode-owl-plugins.googlecode.com/svn/trunk/cloud/update.properties
+Bundle-Vendor: The CO-ODE Project, The University of Manchester
+Bundle-DocURL: http://co-ode-owl-plugins.googlecode.com/svn/trunk/cloud/version-info.txt
+Bundle-License: http://www.gnu.org/licenses/lgpl.html
+Bundle-UpdateLocation: http://co-ode-owl-plugins.googlecode.com/files/org.coode.cloud_1_1_1.jar
 Bundle-ClassPath: .
 Import-Package: org.osgi.framework,
  org.apache.log4j
-Bundle-Version: 1.0.8
+Bundle-Version: 1.1.0
 Bundle-Activator: org.protege.editor.core.plugin.DefaultPluginActivator
 Require-Bundle: org.eclipse.equinox.registry,
  org.eclipse.equinox.common,
- org.protege.editor.core.application,
- org.protege.editor.owl,
- org.semanticweb.owl.owlapi
+ org.protege.editor.core.application;bundle-version="4.1",
+ org.protege.editor.owl;bundle-version="4.1",
+ org.semanticweb.owl.owlapi;bundle-version="3.0"

@@ -1,13 +1,12 @@
 package org.coode.cloud.view;
 
 import org.coode.cloud.model.AbstractClassCloudModel;
-import org.coode.cloud.view.AbstractClassCloudView;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -58,7 +57,7 @@ public class ClassesBySiblingCount extends AbstractClassCloudView {
 
         protected int getValueForEntity(OWLClass entity) throws OWLException {
             Set<OWLClass> siblings = new HashSet<OWLClass>();
-            OWLObjectHierarchyProvider<OWLClass> hierarchyProvider = getOWLModelManager().getOWLClassHierarchyProvider();
+            OWLObjectHierarchyProvider<OWLClass> hierarchyProvider = getOWLModelManager().getOWLHierarchyManager().getOWLClassHierarchyProvider();
             for (OWLClass parent : hierarchyProvider.getParents(entity)) {
                 siblings.addAll(hierarchyProvider.getChildren(parent));
             }

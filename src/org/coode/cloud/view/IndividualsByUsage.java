@@ -1,12 +1,13 @@
 package org.coode.cloud.view;
 
-import org.coode.cloud.model.AbstractClassCloudModel;
+import org.coode.cloud.model.AbstractOWLCloudModel;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
-import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /*
@@ -41,24 +42,39 @@ import java.util.Set;
  * Date: Sep 26, 2006<br><br>
  * <p/>
  */
-public class ClassesByDescendants extends AbstractClassCloudView {
+public class IndividualsByUsage extends AbstractCloudView {
 
     protected OWLCloudModel createModel() {
-        return new ClassesByDescendants.ClassesByDescendantCountModel(getOWLModelManager());
+        return new IndividualsByUsageModel(getOWLModelManager());
     }
 
-    class ClassesByDescendantCountModel extends AbstractClassCloudModel {
+    protected boolean isOWLIndividualView() {
+        return true;
+    }
 
-        protected ClassesByDescendantCountModel(OWLModelManager mngr) {
+    class IndividualsByUsageModel extends AbstractOWLCloudModel<OWLNamedIndividual> {
+
+        protected IndividualsByUsageModel(OWLModelManager mngr) {
             super(mngr);
         }
 
-        protected int getValueForEntity(OWLClass entity) throws OWLException {
-            Set<OWLClass> descendants = getOWLModelManager().getOWLHierarchyManager().getOWLClassHierarchyProvider().getDescendants(entity);
-            return descendants.size();
+        public Set<OWLNamedIndividual> getEntities() {
+            Set<OWLNamedIndividual> entities = new HashSet<OWLNamedIndividual>();
+            for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
+                entities.addAll(ont.getReferencedIndividuals());
+            }
+            return entities;
         }
 
-        public void activeOntologiesChanged(Set<OWLOntology> activeOntologies) throws OWLException {
+        public void activeOntologiesChanged(Set<OWLOntology> ontologies) throws OWLException {
+        }
+
+        protected int getValueForEntity(OWLNamedIndividual entity) throws OWLException {
+            int usage = 0;
+            for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
+                usage += ont.getReferencingAxioms(entity).size();
+            }
+            return usage;
         }
     }
 }
