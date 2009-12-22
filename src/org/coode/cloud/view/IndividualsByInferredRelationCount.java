@@ -1,14 +1,19 @@
 package org.coode.cloud.view;
 
-import org.coode.cloud.model.AbstractOWLCloudModel;
-import org.coode.cloud.model.OWLCloudModel;
-import org.protege.editor.owl.model.OWLModelManager;
-import org.semanticweb.owlapi.inference.OWLReasoner;
-import org.semanticweb.owlapi.model.*;
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.coode.cloud.model.AbstractOWLCloudModel;
+import org.coode.cloud.model.OWLCloudModel;
+import org.protege.editor.owl.model.OWLModelManager;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -72,14 +77,14 @@ public class IndividualsByInferredRelationCount extends AbstractCloudView {
         protected int getValueForEntity(OWLNamedIndividual entity) throws OWLException {
             int usage = 0;
             OWLReasoner r = getOWLModelManager().getReasoner();
-            if (r.isRealised()){
-                Map<OWLObjectProperty, Set<OWLNamedIndividual>> objPropRelations = r.getObjectPropertyRelationships(entity);
-                for (OWLObjectProperty p : objPropRelations.keySet()){
-                    usage += objPropRelations.get(p).size();
-                }
-                Map<OWLDataProperty, Set<OWLLiteral>> dataPropRelations = r.getDataPropertyRelationships(entity);
-                for (OWLDataProperty p : dataPropRelations.keySet()){
-                    usage += dataPropRelations.get(p).size();
+            if (getOWLModelManager().getOWLReasonerManager().isClassified()) {
+                for (OWLOntology ontology : r.getRootOntology().getImportsClosure()) {
+                    for (OWLObjectProperty p : ontology.getObjectPropertiesInSignature()) {
+                        usage += r.getObjectPropertyValues(entity, p).getFlattened().size();
+                    }
+                    for (OWLDataProperty p : ontology.getDataPropertiesInSignature()) {
+                        usage += r.getDataPropertyValues(entity, p).size();
+                    }
                 }
             }
             return usage;
