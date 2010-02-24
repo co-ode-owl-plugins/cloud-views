@@ -61,7 +61,7 @@ public class IndividualsByUsage extends AbstractCloudView {
         public Set<OWLNamedIndividual> getEntities() {
             Set<OWLNamedIndividual> entities = new HashSet<OWLNamedIndividual>();
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
-                entities.addAll(ont.getReferencedIndividuals());
+                entities.addAll(ont.getIndividualsInSignature());
             }
             return entities;
         }

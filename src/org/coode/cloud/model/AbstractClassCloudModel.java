@@ -48,7 +48,7 @@ public abstract class AbstractClassCloudModel extends AbstractOWLCloudModel<OWLC
     public Set<OWLClass> getEntities() {
         Set<OWLClass> clses = new HashSet<OWLClass>();
         for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
-            clses.addAll(ont.getReferencedClasses());
+            clses.addAll(ont.getClassesInSignature());
         }
         return clses;
     }

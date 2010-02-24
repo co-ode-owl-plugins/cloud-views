@@ -61,7 +61,7 @@ public class DataPropertiesByUsage extends AbstractCloudView {
         public Set<OWLDataProperty> getEntities() {
             Set<OWLDataProperty> props = new HashSet<OWLDataProperty>();
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
-                props.addAll(ont.getReferencedDataProperties());
+                props.addAll(ont.getDataPropertiesInSignature());
             }
             return props;
         }
