@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pluginUpdateInfo version="1.1.1" id="org.coode.cloud" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://protege.googlecode.com/svn/trunk/autoupdate/4_1/PluginUpdateInfo.xsd">
+
+	<name>Cloud Views</name>
+
+	<author>CO-ODE, The University of Manchester</author>
+
+	<license>http://www.gnu.org/licenses/lgpl.html</license>
+	
+	<readme>http://co-ode-owl-plugins.googlecode.com/svn/trunk/cloud/etc/version.cloud.html</readme>
+
+	<download>http://co-ode-owl-plugins.googlecode.com/files/org.coode.cloud_1_1_1.zip</download>
+	
+	<categories>
+		<category>Visualization</category>
+	</categories>
+	
+	<dependencies />
+
+</pluginUpdateInfo>
