@@ -1,7 +1,6 @@
 package org.coode.cloud.view;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.coode.cloud.model.AbstractOWLCloudModel;
@@ -9,7 +8,6 @@ import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -49,7 +47,9 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
  */
 public class IndividualsByInferredRelationCount extends AbstractCloudView {
 
-    protected OWLCloudModel createModel() {
+	private static final long serialVersionUID = -234550577214825167L;
+
+	protected OWLCloudModel createModel() {
         return new IndividualsByRelationCountModel(getOWLModelManager());
     }
 

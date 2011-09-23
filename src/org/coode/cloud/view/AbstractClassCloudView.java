@@ -34,7 +34,9 @@ package org.coode.cloud.view;
  */
 public abstract class AbstractClassCloudView extends AbstractCloudView {
 
-    public void initialiseView() throws Exception {
+	private static final long serialVersionUID = -3770469508306941079L;
+
+	public void initialiseView() throws Exception {
         super.initialiseView();
     }
 

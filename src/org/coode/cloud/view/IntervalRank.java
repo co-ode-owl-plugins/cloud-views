@@ -45,7 +45,9 @@ import java.util.*;
  */
 public class IntervalRank extends AbstractClassCloudView {
 
-    protected OWLCloudModel createModel() {
+	private static final long serialVersionUID = 2413080726115916638L;
+
+	protected OWLCloudModel createModel() {
         return new IntervalRankModel(getOWLModelManager());
     }
 

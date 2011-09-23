@@ -43,7 +43,9 @@ import java.util.Set;
  */
 public class ClassesByDescendants extends AbstractClassCloudView {
 
-    protected OWLCloudModel createModel() {
+	private static final long serialVersionUID = -6320499260284321307L;
+
+	protected OWLCloudModel createModel() {
         return new ClassesByDescendants.ClassesByDescendantCountModel(getOWLModelManager());
     }
 

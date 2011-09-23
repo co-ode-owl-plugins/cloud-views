@@ -43,7 +43,9 @@ import java.util.Set;
  */
 public class ClassesByRestrCount extends AbstractClassCloudView {
 
-    protected OWLCloudModel createModel() {
+	private static final long serialVersionUID = 4433508953101468884L;
+
+	protected OWLCloudModel createModel() {
         return new ClassesByRestrCountModel(getOWLModelManager());
     }
 

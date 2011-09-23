@@ -34,7 +34,10 @@ import java.awt.*;
  */
 public class ModifiedFlowLayout extends FlowLayout
 {
-    private static final int FUDGE_FACTOR = 20;
+
+	private static final long serialVersionUID = 2867348977944303355L;
+	
+	private static final int FUDGE_FACTOR = 20;
 
     public ModifiedFlowLayout()
     {

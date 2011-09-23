@@ -44,7 +44,9 @@ import java.util.Set;
  */
 public class IndividualsByUsage extends AbstractCloudView {
 
-    protected OWLCloudModel createModel() {
+	private static final long serialVersionUID = -5949780880182741905L;
+
+	protected OWLCloudModel createModel() {
         return new IndividualsByUsageModel(getOWLModelManager());
     }
 

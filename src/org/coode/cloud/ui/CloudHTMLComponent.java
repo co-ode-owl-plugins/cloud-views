@@ -50,7 +50,9 @@ import java.io.*;
  */
 public class CloudHTMLComponent<O> extends JEditorPane implements CloudComponent<O> {
 
-    private final Logger logger = Logger.getLogger(this.getClass());
+	private static final long serialVersionUID = -4479351166624892469L;
+
+	private final Logger logger = Logger.getLogger(this.getClass());
 
     private CloudModel<O> model;
 

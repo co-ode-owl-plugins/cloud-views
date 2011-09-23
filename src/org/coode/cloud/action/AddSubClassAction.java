@@ -44,7 +44,9 @@ import java.util.List;
  */
 public class AddSubClassAction extends OWLSelectionViewAction {
 
-    private OWLEditorKit eKit;
+	private static final long serialVersionUID = -3771715532564467740L;
+
+	private OWLEditorKit eKit;
 
     public AddSubClassAction(OWLEditorKit eKit) {
         super("Add subclass", OWLIcons.getIcon("class.add.sub.png"));

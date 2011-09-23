@@ -1,28 +1,11 @@
 package org.coode.cloud.view;
 
-import org.coode.cloud.model.OWLCloudModel;
-import org.coode.cloud.ui.CloudComponent;
-import org.coode.cloud.ui.CloudHTMLRenderer;
-import org.coode.cloud.ui.CloudSwingComponent;
-import org.protege.editor.core.FileUtils;
-import org.protege.editor.core.ProtegeApplication;
-import org.protege.editor.core.ui.util.Icons;
-import org.protege.editor.core.ui.util.UIUtil;
-import org.protege.editor.core.ui.view.DisposableAction;
-import org.protege.editor.owl.model.event.EventType;
-import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
-import org.protege.editor.owl.model.event.OWLModelManagerListener;
-import org.protege.editor.owl.ui.renderer.OWLEntityRenderer;
-import org.protege.editor.owl.ui.renderer.OWLEntityRendererListener;
-import org.protege.editor.owl.ui.view.AbstractOWLSelectionViewComponent;
-import org.protege.editor.owl.ui.OWLObjectComparator;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLObject;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.LayoutManager;
+import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
@@ -35,6 +18,36 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.Scrollable;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import org.coode.cloud.model.OWLCloudModel;
+import org.coode.cloud.ui.CloudComponent;
+import org.coode.cloud.ui.CloudHTMLRenderer;
+import org.coode.cloud.ui.CloudSwingComponent;
+import org.protege.editor.core.FileUtils;
+import org.protege.editor.core.ProtegeApplication;
+import org.protege.editor.core.ui.util.Icons;
+import org.protege.editor.core.ui.util.UIUtil;
+import org.protege.editor.core.ui.view.DisposableAction;
+import org.protege.editor.owl.model.event.EventType;
+import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
+import org.protege.editor.owl.model.event.OWLModelManagerListener;
+import org.protege.editor.owl.ui.renderer.OWLEntityRendererListener;
+import org.protege.editor.owl.ui.renderer.OWLModelManagerEntityRenderer;
+import org.protege.editor.owl.ui.view.AbstractOWLSelectionViewComponent;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObject;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -70,7 +83,9 @@ import java.util.Set;
  */
 public abstract class AbstractCloudView<O extends OWLEntity> extends AbstractOWLSelectionViewComponent {
 
-    private static final String ZOOM_LABEL = "Zoom in or out of the view";
+	private static final long serialVersionUID = -2657880217389567784L;
+
+	private static final String ZOOM_LABEL = "Zoom in or out of the view";
     private static final String FILTER_LABEL = "Filter out low ranked results";
 
     private static final int MAX_ZOOM_MIN_SIZE = 24;
@@ -121,7 +136,7 @@ public abstract class AbstractCloudView<O extends OWLEntity> extends AbstractOWL
     };
 
     private OWLEntityRendererListener rendererListener = new OWLEntityRendererListener() {
-        public void renderingChanged(OWLEntity entity, OWLEntityRenderer renderer) {
+        public void renderingChanged(OWLEntity entity, OWLModelManagerEntityRenderer renderer) {
             cloudComponent.clearLabelCache();
             cloudComponent.doLayout(true);
         }
@@ -141,66 +156,70 @@ public abstract class AbstractCloudView<O extends OWLEntity> extends AbstractOWL
         }
     };
 
-    private DisposableAction sortAction =
-            new DisposableAction("Sort (switch between alphabetic and value order)",
-                                 Icons.getIcon("sort.ascending.png")) {
-                public void dispose() {
-                }
+	private DisposableAction sortAction = new DisposableAction(
+			"Sort (switch between alphabetic and value order)",
+			Icons.getIcon("sort.ascending.png")) {
 
-                public void actionPerformed(ActionEvent actionEvent) {
-                    if (cloudComponent.getComparator() == scoreComparator) {
-                        cloudComponent.setComparator(alphaComparator);
-                    }
-                    else {
-                        cloudComponent.setComparator(scoreComparator);
-                    }
-                    cloudComponent.doLayout(true);
-                }
-            };
+		private static final long serialVersionUID = 7188950338724315982L;
 
-    private DisposableAction normaliseAction =
-            new DisposableAction("Stretch (emphasize the differences between labels)",
-                                 new ImageIcon(AbstractCloudView.class.getResource("stretch.png"))) {
-                public void dispose() {
-                }
+		public void dispose() {
+		}
 
-                public void actionPerformed(ActionEvent actionEvent) {
-                    cloudComponent.setNormalise(!cloudComponent.isNormalised());
-                    cloudComponent.doLayout(false);
-                }
-            };
+		public void actionPerformed(ActionEvent actionEvent) {
+			if (cloudComponent.getComparator() == scoreComparator) {
+				cloudComponent.setComparator(alphaComparator);
+			} else {
+				cloudComponent.setComparator(scoreComparator);
+			}
+			cloudComponent.doLayout(true);
+		}
+	};
 
+	private DisposableAction normaliseAction = new DisposableAction(
+			"Stretch (emphasize the differences between labels)",
+			new ImageIcon(AbstractCloudView.class.getResource("stretch.png"))) {
 
-    private DisposableAction exportAction = new DisposableAction("Export",
-                                                                 Icons.getIcon("project.save.gif")){
+		private static final long serialVersionUID = -2057721261201305569L;
 
-        public void dispose() {
-        }
+		public void dispose() {
+		}
 
+		public void actionPerformed(ActionEvent actionEvent) {
+			cloudComponent.setNormalise(!cloudComponent.isNormalised());
+			cloudComponent.doLayout(false);
+		}
+	};
 
-        public void actionPerformed(ActionEvent event) {
-            handleExport();
-        }
-    };
+	private DisposableAction exportAction = new DisposableAction("Export",
+			Icons.getIcon("project.save.gif")) {
 
+		private static final long serialVersionUID = -7892830118347300564L;
 
-    private DisposableAction printAction =
-            new DisposableAction("Print",
-                                 new ImageIcon(AbstractCloudView.class.getResource("Print16.gif"))){
-                public void dispose() {
-                }
+		public void dispose() {
+		}
 
-                public void actionPerformed(ActionEvent actionEvent) {
-                    printContent();
-                }
-            };
+		public void actionPerformed(ActionEvent event) {
+			handleExport();
+		}
+	};
+
+	private DisposableAction printAction = new DisposableAction("Print",
+			new ImageIcon(AbstractCloudView.class.getResource("Print16.gif"))) {
+		private static final long serialVersionUID = -4874739064378311243L;
+
+		public void dispose() {
+		}
+
+		public void actionPerformed(ActionEvent actionEvent) {
+			printContent();
+		}
+	};
 
     private SelectionListener<O> selectionListener = new SelectionListener<O>(){
         public void selectionChanged(O selection) {
             getOWLWorkspace().getOWLSelectionModel().setSelectedEntity(selection);
         }
     };
-
 
     public void initialiseView() throws Exception {
 
@@ -368,7 +387,10 @@ public abstract class AbstractCloudView<O extends OWLEntity> extends AbstractOWL
     }
 
     class MyPanel extends JPanel implements Scrollable {
-        public MyPanel(LayoutManager layoutManager) {
+
+    	private static final long serialVersionUID = 2109739017191220178L;
+
+		public MyPanel(LayoutManager layoutManager) {
             super(layoutManager);
         }
 

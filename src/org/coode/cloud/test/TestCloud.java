@@ -77,7 +77,10 @@ public class TestCloud {
         f.getContentPane().setLayout(new BorderLayout());
         f.getContentPane().add(new JScrollPane(cloud), BorderLayout.CENTER);
         f.getContentPane().add(new JButton(new AbstractAction("reload"){
-            public void actionPerformed(ActionEvent actionEvent) {
+
+        	private static final long serialVersionUID = -17394883027977876L;
+
+			public void actionPerformed(ActionEvent actionEvent) {
                 cloud.doLayout(true);
             }
         }), BorderLayout.NORTH);

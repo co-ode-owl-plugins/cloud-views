@@ -45,7 +45,10 @@ import java.util.Set;
  * <p/>
  */
 public class ClassInterestingness extends AbstractClassCloudView {
-    private JSlider slider;
+
+	private static final long serialVersionUID = 6134752150563492815L;
+
+	private JSlider slider;
 
     private int definedClassWeight = 2;
 

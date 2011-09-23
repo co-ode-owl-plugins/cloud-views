@@ -47,7 +47,9 @@ import java.util.*;
  */
 public class CloudSwingComponent<O> extends JPanel implements CloudComponent<O> {
 
-    private static final Color BG_COLOUR = Color.WHITE;
+	private static final long serialVersionUID = -6892845908165209765L;
+
+	private static final Color BG_COLOUR = Color.WHITE;
     private static final Color SELECTION_COLOR = Color.BLUE;
     private static final String DEFAULT_FONT = "SansSerif";
 
