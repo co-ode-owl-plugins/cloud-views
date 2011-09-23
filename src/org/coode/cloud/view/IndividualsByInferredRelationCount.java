@@ -6,6 +6,7 @@ import java.util.Set;
 import org.coode.cloud.model.AbstractOWLCloudModel;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.model.inference.ReasonerStatus;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -77,7 +78,8 @@ public class IndividualsByInferredRelationCount extends AbstractCloudView {
         protected int getValueForEntity(OWLNamedIndividual entity) throws OWLException {
             int usage = 0;
             OWLReasoner r = getOWLModelManager().getReasoner();
-            if (getOWLModelManager().getOWLReasonerManager().isClassified()) {
+            
+            if (getOWLModelManager().getOWLReasonerManager().getReasonerStatus() == ReasonerStatus.INITIALIZED) {
                 for (OWLOntology ontology : r.getRootOntology().getImportsClosure()) {
                     for (OWLObjectProperty p : ontology.getObjectPropertiesInSignature()) {
                         usage += r.getObjectPropertyValues(entity, p).getFlattened().size();
