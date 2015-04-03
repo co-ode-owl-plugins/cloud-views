@@ -1,16 +1,21 @@
 package org.coode.cloud.view;
 
+import java.util.Set;
+
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.coode.cloud.model.AbstractClassCloudModel;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.util.Set;
+import org.semanticweb.owlapi.model.parameters.Imports;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -53,12 +58,14 @@ public class ClassInterestingness extends AbstractClassCloudView {
     private int definedClassWeight = 2;
 
     private ChangeListener sliderListener = new ChangeListener() {
+        @Override
         public void stateChanged(ChangeEvent changeEvent) {
             definedClassWeight = slider.getValue();
             getCloudComponent().refill();
         }
     };
 
+    @Override
     public void initialiseView() throws Exception {
         super.initialiseView();
 
@@ -76,6 +83,7 @@ public class ClassInterestingness extends AbstractClassCloudView {
         getSliderPanel().add(c);
     }
 
+    @Override
     protected OWLCloudModel createModel() {
         return new ClassInterestingness.ClassInterestingnessModel(getOWLModelManager());
     }
@@ -86,17 +94,23 @@ public class ClassInterestingness extends AbstractClassCloudView {
             super(mngr);
         }
 
+        @Override
         public void activeOntologiesChanged(Set<OWLOntology> ontologies) {
         }
 
+        @Override
         protected int getValueForEntity(OWLClass entity) throws OWLException {
             int restrictionCount = 0;
             int definedClassBonus = 0;
             int usage = 0;
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()){
-                restrictionCount += entity.getSuperClasses(ont).size();
-                definedClassBonus = definedClassWeight * entity.getEquivalentClasses(ont).size();
-                usage += ont.getReferencingAxioms(entity).size();
+                restrictionCount += EntitySearcher.getSuperClasses(entity, ont)
+                        .size();
+                definedClassBonus = definedClassWeight
+                        * EntitySearcher.getEquivalentClasses(entity, ont)
+                                .size();
+                usage += ont.getReferencingAxioms(entity, Imports.EXCLUDED)
+                        .size();
             }
             return restrictionCount + usage + definedClassBonus;
         }

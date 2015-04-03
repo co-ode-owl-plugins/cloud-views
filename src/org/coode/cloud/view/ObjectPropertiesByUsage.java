@@ -1,14 +1,15 @@
 package org.coode.cloud.view;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.coode.cloud.model.AbstractOWLCloudModel;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.util.HashSet;
-import java.util.Set;
+import org.semanticweb.owlapi.model.parameters.Imports;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -46,10 +47,12 @@ public class ObjectPropertiesByUsage extends AbstractCloudView {
 
 	private static final long serialVersionUID = 6289540835591242882L;
 
-	protected OWLCloudModel createModel() {
+	@Override
+    protected OWLCloudModel createModel() {
         return new PropertiesByUsageModel(getOWLModelManager());
     }
 
+    @Override
     protected boolean isOWLObjectPropertyView() {
         return true;
     }
@@ -60,6 +63,7 @@ public class ObjectPropertiesByUsage extends AbstractCloudView {
             super(mngr);
         }
 
+        @Override
         public Set<OWLObjectProperty> getEntities() {
             Set<OWLObjectProperty> props = new HashSet<OWLObjectProperty>();
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
@@ -68,13 +72,16 @@ public class ObjectPropertiesByUsage extends AbstractCloudView {
             return props;
         }
 
+        @Override
         public void activeOntologiesChanged(Set<OWLOntology> ontologies) throws OWLException {
         }
 
+        @Override
         protected int getValueForEntity(OWLObjectProperty entity) throws OWLException {
             int usage = 0;
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
-                usage += ont.getReferencingAxioms(entity).size();
+                usage += ont.getReferencingAxioms(entity, Imports.EXCLUDED)
+                        .size();
             }
             return usage;
         }

@@ -1,14 +1,15 @@
 package org.coode.cloud.view;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.coode.cloud.model.AbstractOWLCloudModel;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.util.HashSet;
-import java.util.Set;
+import org.semanticweb.owlapi.model.parameters.Imports;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -46,10 +47,12 @@ public class DataPropertiesByUsage extends AbstractCloudView {
 
 	private static final long serialVersionUID = -4543508379588523946L;
 
-	protected OWLCloudModel createModel() {
+	@Override
+    protected OWLCloudModel createModel() {
         return new DataPropertiesByUsage.PropertiesByUsageModel(getOWLModelManager());
     }
 
+    @Override
     protected boolean isOWLDataPropertyView() {
         return true;
     }
@@ -60,6 +63,7 @@ public class DataPropertiesByUsage extends AbstractCloudView {
             super(mngr);
         }
 
+        @Override
         public Set<OWLDataProperty> getEntities() {
             Set<OWLDataProperty> props = new HashSet<OWLDataProperty>();
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
@@ -68,13 +72,16 @@ public class DataPropertiesByUsage extends AbstractCloudView {
             return props;
         }
 
+        @Override
         public void activeOntologiesChanged(Set<OWLOntology> ontologies) {
         }
 
+        @Override
         protected int getValueForEntity(OWLDataProperty entity) throws OWLException {
             int usage = 0;
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
-                usage += ont.getReferencingAxioms(entity).size();
+                usage += ont.getReferencingAxioms(entity, Imports.EXCLUDED)
+                        .size();
             }
             return usage;
         }

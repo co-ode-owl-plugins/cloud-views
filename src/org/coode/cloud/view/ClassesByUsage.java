@@ -1,13 +1,14 @@
 package org.coode.cloud.view;
 
+import java.util.Set;
+
 import org.coode.cloud.model.AbstractClassCloudModel;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.util.Set;
+import org.semanticweb.owlapi.model.parameters.Imports;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -45,7 +46,8 @@ public class ClassesByUsage extends AbstractClassCloudView {
 
 	private static final long serialVersionUID = -1076975758654369961L;
 
-	protected OWLCloudModel createModel() {
+	@Override
+    protected OWLCloudModel createModel() {
         return new ClassesByUsageModel(getOWLModelManager());
     }
 
@@ -55,13 +57,16 @@ public class ClassesByUsage extends AbstractClassCloudView {
             super(mngr);
         }
 
+        @Override
         public void activeOntologiesChanged(Set<OWLOntology> ontologies) {
         }
 
+        @Override
         protected int getValueForEntity(OWLClass entity) throws OWLException {
             int count = 0;
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()){
-                count += ont.getReferencingAxioms(entity).size();
+                count += ont.getReferencingAxioms(entity, Imports.EXCLUDED)
+                        .size();
             }
             return count;
         }

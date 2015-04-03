@@ -1,13 +1,14 @@
 package org.coode.cloud.view;
 
+import java.util.Set;
+
 import org.coode.cloud.model.AbstractClassCloudModel;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.util.Set;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -45,7 +46,8 @@ public class ClassesByRestrCount extends AbstractClassCloudView {
 
 	private static final long serialVersionUID = 4433508953101468884L;
 
-	protected OWLCloudModel createModel() {
+	@Override
+    protected OWLCloudModel createModel() {
         return new ClassesByRestrCountModel(getOWLModelManager());
     }
 
@@ -54,14 +56,16 @@ public class ClassesByRestrCount extends AbstractClassCloudView {
             super(mngr);
         }
 
+        @Override
         protected int getValueForEntity(OWLClass entity) throws OWLException {
             int count = 0;
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()){
-                count += entity.getSuperClasses(ont).size();
+                count += EntitySearcher.getSuperClasses(entity, ont).size();
             }
             return count;
         }
 
+        @Override
         public void activeOntologiesChanged(Set<OWLOntology> activeOntologies) throws OWLException {
         }
     }

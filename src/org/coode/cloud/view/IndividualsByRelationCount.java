@@ -1,13 +1,21 @@
 package org.coode.cloud.view;
 
-import org.coode.cloud.model.AbstractOWLCloudModel;
-import org.coode.cloud.model.OWLCloudModel;
-import org.protege.editor.owl.model.OWLModelManager;
-import org.semanticweb.owlapi.model.*;
-
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.coode.cloud.model.AbstractOWLCloudModel;
+import org.coode.cloud.model.OWLCloudModel;
+import org.protege.editor.owl.model.OWLModelManager;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -45,10 +53,12 @@ public class IndividualsByRelationCount extends AbstractCloudView {
 
 	private static final long serialVersionUID = 6723983087570222566L;
 
-	protected OWLCloudModel createModel() {
+	@Override
+    protected OWLCloudModel createModel() {
         return new IndividualsByRelationCountModel(getOWLModelManager());
     }
 
+    @Override
     protected boolean isOWLIndividualView() {
         return true;
     }
@@ -59,6 +69,7 @@ public class IndividualsByRelationCount extends AbstractCloudView {
             super(mngr);
         }
 
+        @Override
         public Set<OWLNamedIndividual> getEntities() {
             Set<OWLNamedIndividual> entities = new HashSet<OWLNamedIndividual>();
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
@@ -67,17 +78,21 @@ public class IndividualsByRelationCount extends AbstractCloudView {
             return entities;
         }
 
+        @Override
         public void activeOntologiesChanged(Set<OWLOntology> ontologies) throws OWLException {
         }
 
+        @Override
         protected int getValueForEntity(OWLNamedIndividual entity) throws OWLException {
             int usage = 0;
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
-                final Map<OWLObjectPropertyExpression,Set<OWLIndividual>> objPropAssertionsMap = entity.getObjectPropertyValues(ont);
+                final Map<OWLObjectPropertyExpression, Collection<OWLIndividual>> objPropAssertionsMap = EntitySearcher
+                        .getObjectPropertyValues(entity, ont).asMap();
                 for (OWLObjectPropertyExpression op : objPropAssertionsMap.keySet()){
                     usage += objPropAssertionsMap.get(op).size();
                 }
-                final Map<OWLDataPropertyExpression,Set<OWLLiteral>> dataPropAssertionsMap = entity.getDataPropertyValues(ont);
+                final Map<OWLDataPropertyExpression, Collection<OWLLiteral>> dataPropAssertionsMap = EntitySearcher
+                        .getDataPropertyValues(entity, ont).asMap();
                 for (OWLDataPropertyExpression op : dataPropAssertionsMap.keySet()){
                     usage += dataPropAssertionsMap.get(op).size();
                 }
