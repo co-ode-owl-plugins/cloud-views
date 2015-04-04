@@ -1,11 +1,13 @@
 package org.coode.cloud.ui;
 
-import org.coode.cloud.model.CloudModel;
-
-import java.io.Writer;
+import java.awt.Color;
 import java.io.IOException;
-import java.util.*;
-import java.awt.*;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+import org.coode.cloud.model.CloudModel;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -64,7 +66,7 @@ public class CloudHTMLRenderer<O> {
 
     public void render(Writer writer) throws IOException {
 
-        entities = new ArrayList<O>(model.getEntities(threshold));
+        entities = new ArrayList<>(model.getEntities(threshold));
 
         Collections.sort(entities, comparator);
 

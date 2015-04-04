@@ -12,7 +12,6 @@ import org.coode.cloud.model.AbstractClassCloudModel;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.search.EntitySearcher;
@@ -53,9 +52,9 @@ public class ClassInterestingness extends AbstractClassCloudView {
 
 	private static final long serialVersionUID = 6134752150563492815L;
 
-	private JSlider slider;
+	protected JSlider slider;
 
-    private int definedClassWeight = 2;
+	protected int definedClassWeight = 2;
 
     private ChangeListener sliderListener = new ChangeListener() {
         @Override
@@ -66,7 +65,7 @@ public class ClassInterestingness extends AbstractClassCloudView {
     };
 
     @Override
-    public void initialiseView() throws Exception {
+    public void initialiseView() {
         super.initialiseView();
 
         JPanel c = new JPanel();
@@ -84,7 +83,7 @@ public class ClassInterestingness extends AbstractClassCloudView {
     }
 
     @Override
-    protected OWLCloudModel createModel() {
+    protected OWLCloudModel<OWLClass> createModel() {
         return new ClassInterestingness.ClassInterestingnessModel(getOWLModelManager());
     }
 
@@ -99,7 +98,7 @@ public class ClassInterestingness extends AbstractClassCloudView {
         }
 
         @Override
-        protected int getValueForEntity(OWLClass entity) throws OWLException {
+        protected int getValueForEntity(OWLClass entity) {
             int restrictionCount = 0;
             int definedClassBonus = 0;
             int usage = 0;

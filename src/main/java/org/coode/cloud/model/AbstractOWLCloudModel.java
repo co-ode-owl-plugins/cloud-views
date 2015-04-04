@@ -1,5 +1,7 @@
 package org.coode.cloud.model;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.event.EventType;
@@ -9,8 +11,6 @@ import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
-
-import java.util.List;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -54,13 +54,15 @@ public abstract class AbstractOWLCloudModel<O extends OWLEntity> extends Abstrac
 
     // listen to any changes in the ontology
     private OWLOntologyChangeListener ontChangeListener = new OWLOntologyChangeListener() {
-        public void ontologiesChanged(List<? extends OWLOntologyChange> changes) throws OWLException {
+        @Override
+        public void ontologiesChanged(List<? extends OWLOntologyChange> changes) {
             reload();
         }
     };
 
     // listen to whether the currently active ontology has changed
     private OWLModelManagerListener activeOntologyListener = new OWLModelManagerListener() {
+        @Override
         public void handleChange(OWLModelManagerChangeEvent event) {
             if (event.getType() == EventType.ACTIVE_ONTOLOGY_CHANGED ||
                 event.getType() == EventType.ONTOLOGY_VISIBILITY_CHANGED) {
@@ -85,6 +87,7 @@ public abstract class AbstractOWLCloudModel<O extends OWLEntity> extends Abstrac
         return mngr;
     }
 
+    @Override
     public final void dataChanged() {
         try {
             activeOntologiesChanged(mngr.getActiveOntologies());
@@ -94,6 +97,7 @@ public abstract class AbstractOWLCloudModel<O extends OWLEntity> extends Abstrac
         }
     }
 
+    @Override
     protected final int calculateValue(O entity){
         try {
             return getValueForEntity(entity);
@@ -106,20 +110,24 @@ public abstract class AbstractOWLCloudModel<O extends OWLEntity> extends Abstrac
 
     protected abstract int getValueForEntity(O entity) throws OWLException;
 
+    @Override
     public String getRendering(O entity) {
         return mngr.getRendering(entity);
     }
 
+    @Override
     public O getEntity(String text) {
         return (O)mngr.getOWLEntityFinder().getOWLEntity(text);
     }
 
+    @Override
     public void dispose() {
         super.dispose();
         mngr.removeOntologyChangeListener(ontChangeListener);
         mngr.removeListener(activeOntologyListener);
     }
 
+    @Override
     protected void reload() {
         if (sync) {
             super.reload();
@@ -130,6 +138,7 @@ public abstract class AbstractOWLCloudModel<O extends OWLEntity> extends Abstrac
         }
     }
 
+    @Override
     public void setSync(boolean synchronise) {
         if (synchronise != sync) {
             sync = synchronise;

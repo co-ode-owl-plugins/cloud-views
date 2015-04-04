@@ -1,8 +1,15 @@
 package org.coode.cloud.model;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.util.*;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -38,12 +45,12 @@ import java.util.*;
  */
 public abstract class AbstractCloudModel<O> implements CloudModel<O> {
 
-    private Map<O, Integer> entityValueMap = new HashMap<O, Integer>();
+    protected Map<O, Integer> entityValueMap = new HashMap<>();
 
     private int min;
     private int max;
 
-    private List<ChangeListener> listeners = new ArrayList<ChangeListener>();
+    private List<ChangeListener> listeners = new ArrayList<>();
 
     protected AbstractCloudModel() {
         reload();
@@ -68,13 +75,15 @@ public abstract class AbstractCloudModel<O> implements CloudModel<O> {
             }
     }
 
+    @Override
     public abstract Set<O> getEntities();
 
+    @Override
     public final Set<O> getEntities(int threshold) {
 
         threshold = normalize(threshold);
 
-        Set<O> result = new HashSet<O>();
+        Set<O> result = new HashSet<>();
 
         for (O entity : entityValueMap.keySet()) {
             if (entityValueMap.get(entity) >= threshold) {
@@ -84,24 +93,29 @@ public abstract class AbstractCloudModel<O> implements CloudModel<O> {
         return result;
     }
 
+    @Override
     public String getRendering(O entity) {
         return entity.toString();
     }
 
     protected abstract int calculateValue(O entity);
 
+    @Override
     public final int getValue(O entity) {
         return entityValueMap.get(entity);
     }
 
+    @Override
     public final int getMin() {
         return min;
     }
 
+    @Override
     public final int getMax() {
         return max;
     }
 
+    @Override
     public final int getRange() {
         return max - min;
     }
@@ -112,20 +126,25 @@ public abstract class AbstractCloudModel<O> implements CloudModel<O> {
         return threshold;
     }
 
+    @Override
     public void dispose() {
         listeners.clear();
     }
 
+    @Override
     public final void addChangeListener(ChangeListener l) {
         listeners.add(l);
     }
 
+    @Override
     public final void removeChangeListener(ChangeListener l) {
         listeners.remove(l);
     }
 
+    @Override
     public Comparator<O> getComparator() {
         return new Comparator<O>() {
+            @Override
             public int compare(O entity, O entity1) {
                 // we want to reverse the score comparison, to show biggest first
                 return entityValueMap.get(entity1).compareTo(entityValueMap.get(entity));

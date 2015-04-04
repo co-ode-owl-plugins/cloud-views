@@ -1,17 +1,31 @@
 package org.coode.cloud.ui;
 
-import org.coode.cloud.model.CloudModel;
-import org.coode.cloud.view.SelectionListener;
-import org.coode.cloud.ui.ModifiedFlowLayout;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.RepaintManager;
+
+import org.coode.cloud.model.CloudModel;
+import org.coode.cloud.view.SelectionListener;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -56,10 +70,10 @@ public class CloudSwingComponent<O> extends JPanel implements CloudComponent<O> 
     // capped maximum size of the font used to display entities
     private static final int MAX_SIZE = 64;
 
-    private CloudModel<O> model;
+    protected CloudModel<O> model;
 
     // cache for the label components
-    private Map<O, JComponent> labels = new HashMap<O, JComponent>();
+    private Map<O, JComponent> labels = new HashMap<>();
 
     // cache for the entities
     private java.util.List<O> entities;
@@ -79,9 +93,10 @@ public class CloudSwingComponent<O> extends JPanel implements CloudComponent<O> 
     private int threshold = 0;
     private int zoom = 0;
 
-    private Set<SelectionListener<O>> listeners = new HashSet<SelectionListener<O>>();
+    private Set<SelectionListener<O>> listeners = new HashSet<>();
 
     private MouseListener navListener = new MouseAdapter(){
+        @Override
         public void mouseClicked(MouseEvent mouseEvent) {
             O entity = model.getEntity(((JLabel)mouseEvent.getComponent()).getText());
             notifySelectionChanged(entity);
@@ -95,6 +110,7 @@ public class CloudSwingComponent<O> extends JPanel implements CloudComponent<O> 
         doLayout(true);
     }
 
+    @Override
     public void doLayout(boolean recreateLabels) {
         if (recreateLabels) {
             completeRedrawRequired = true;
@@ -102,7 +118,7 @@ public class CloudSwingComponent<O> extends JPanel implements CloudComponent<O> 
 
         if (isShowing()) {
             if (entities == null){
-                entities = new ArrayList<O>(model.getEntities(threshold));
+                entities = new ArrayList<>(model.getEntities(threshold));
                 Collections.sort(entities, comparator);
             }
 
@@ -136,6 +152,7 @@ public class CloudSwingComponent<O> extends JPanel implements CloudComponent<O> 
         }
     }
 
+    @Override
     public void paint(Graphics graphics) {
         if (layoutRequired){
             doLayout(true);
@@ -147,16 +164,19 @@ public class CloudSwingComponent<O> extends JPanel implements CloudComponent<O> 
     /**
      * Recreate the view from the model - eg if the threshold or model have changed
      */
-    public final void refill(int threshold) {
-        this.threshold = threshold;
+    @Override
+    public final void refill(int t) {
+        this.threshold = t;
         entities = null;
         doLayout(true);
     }
 
+    @Override
     public final void refill(){
         refill(getThreshold());
     }
 
+    @Override
     public void clearLabelCache(){
         for (JComponent label : labels.values()){
             label.removeMouseListener(navListener);
@@ -218,6 +238,7 @@ public class CloudSwingComponent<O> extends JPanel implements CloudComponent<O> 
         return c;
     }
 
+    @Override
     public void setSelection(O newSelection) {
         JComponent label = labels.get(newSelection);
         if (label != null) {
@@ -236,6 +257,7 @@ public class CloudSwingComponent<O> extends JPanel implements CloudComponent<O> 
         scrollToSelected();
     }
 
+    @Override
     public O getSelection(){
         return currentSelection;
     }
@@ -249,6 +271,7 @@ public class CloudSwingComponent<O> extends JPanel implements CloudComponent<O> 
         }
     }
 
+    @Override
     public void setComparator(Comparator<? super O> comparator) {
         this.comparator = comparator;
         if (entities != null){
@@ -256,54 +279,67 @@ public class CloudSwingComponent<O> extends JPanel implements CloudComponent<O> 
         }
     }
 
+    @Override
     public Comparator<? super O> getComparator(){
         return comparator;
     }
 
+    @Override
     public boolean isNormalised() {
         return normalise;
     }
 
+    @Override
     public void setNormalise(boolean normalise) {
         this.normalise = normalise;
     }
 
+    @Override
     public JComponent getComponent() {
         return this;
     }
 
+    @Override
     public int getThreshold() {
         return threshold;
     }
 
+    @Override
     public int getZoom(){
         return zoom;
     }
 
+    @Override
     public void setZoom(int zoom) {
         this.zoom = zoom;
     }
 
+    @Override
     public Dimension getPreferredScrollableViewportSize() {
         return new Dimension(300, 0);
     }
 
+    @Override
     public int getScrollableUnitIncrement(Rectangle rectangle, int i, int i1) {
         return 10;
     }
 
+    @Override
     public int getScrollableBlockIncrement(Rectangle rectangle, int i, int i1) {
         return 20;
     }
 
+    @Override
     public boolean getScrollableTracksViewportWidth() {
         return true;
     }
 
+    @Override
     public boolean getScrollableTracksViewportHeight() {
         return false;
     }
 
+    @Override
     public int print(Graphics g, PageFormat pf, int pageIndex) {
         Graphics2D g2 = (Graphics2D) g;
 
@@ -343,20 +379,23 @@ public class CloudSwingComponent<O> extends JPanel implements CloudComponent<O> 
         }
     }
 
+    @Override
     public void addSelectionListener(SelectionListener<O> l){
         listeners.add(l);
     }
 
+    @Override
     public void removeSelectionListener(SelectionListener<O> l){
         listeners.remove(l);
     }
 
-    private void notifySelectionChanged(O entity) {
+    protected void notifySelectionChanged(O entity) {
         for (SelectionListener<O> l : listeners){
             l.selectionChanged(entity);
         }
     }
 
+    @Override
     public boolean requiresRedraw() {
         return layoutRequired;
     }

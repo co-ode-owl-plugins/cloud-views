@@ -8,7 +8,6 @@ import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.inference.ReasonerStatus;
 import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -46,14 +45,16 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
  * Date: Sep 26, 2006<br><br>
  * <p/>
  */
-public class IndividualsByInferredRelationCount extends AbstractCloudView {
+public class IndividualsByInferredRelationCount extends AbstractCloudView<OWLNamedIndividual> {
 
 	private static final long serialVersionUID = -234550577214825167L;
 
-	protected OWLCloudModel createModel() {
+	@Override
+    protected OWLCloudModel<OWLNamedIndividual> createModel() {
         return new IndividualsByRelationCountModel(getOWLModelManager());
     }
 
+    @Override
     protected boolean isOWLIndividualView() {
         return true;
     }
@@ -64,18 +65,21 @@ public class IndividualsByInferredRelationCount extends AbstractCloudView {
             super(mngr);
         }
 
+        @Override
         public Set<OWLNamedIndividual> getEntities() {
-            Set<OWLNamedIndividual> entities = new HashSet<OWLNamedIndividual>();
+            Set<OWLNamedIndividual> entities = new HashSet<>();
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
                 entities.addAll(ont.getIndividualsInSignature());
             }
             return entities;
         }
 
-        public void activeOntologiesChanged(Set<OWLOntology> ontologies) throws OWLException {
+        @Override
+        public void activeOntologiesChanged(Set<OWLOntology> ontologies) {
         }
 
-        protected int getValueForEntity(OWLNamedIndividual entity) throws OWLException {
+        @Override
+        protected int getValueForEntity(OWLNamedIndividual entity) {
             int usage = 0;
             OWLReasoner r = getOWLModelManager().getReasoner();
             

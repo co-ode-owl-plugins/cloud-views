@@ -1,14 +1,18 @@
 package org.coode.cloud.action;
 
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.entity.OWLEntityCreationSet;
 import org.protege.editor.owl.ui.OWLIcons;
 import org.protege.editor.owl.ui.view.OWLSelectionViewAction;
-import org.semanticweb.owlapi.model.*;
-
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -53,9 +57,11 @@ public class AddSubClassAction extends OWLSelectionViewAction {
         this.eKit = eKit;
     }
 
+    @Override
     public void dispose() {
     }
 
+    @Override
     public void actionPerformed(ActionEvent actionEvent) {
             OWLClass cls = eKit.getWorkspace().getOWLSelectionModel().getLastSelectedClass();
             if (cls == null) {
@@ -65,7 +71,7 @@ public class AddSubClassAction extends OWLSelectionViewAction {
             if (creationSet == null) {
                 return;
             }
-            List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>(creationSet.getOntologyChanges());
+            List<OWLOntologyChange> changes = new ArrayList<>(creationSet.getOntologyChanges());
             // Add the required change to add the subclass relationship
 
             final OWLDataFactory df = eKit.getModelManager().getOWLDataFactory();
@@ -79,6 +85,7 @@ public class AddSubClassAction extends OWLSelectionViewAction {
             eKit.getWorkspace().getOWLSelectionModel().setSelectedEntity(creationSet.getOWLEntity());
     }
 
+    @Override
     public void updateState() {
         OWLClass selection = eKit.getWorkspace().getOWLSelectionModel().getLastSelectedClass();
         if (selection == null) {

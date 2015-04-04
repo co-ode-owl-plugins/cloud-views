@@ -1,15 +1,20 @@
 package org.coode.cloud.test;
 
-import org.coode.cloud.model.AbstractCloudModel;
-import org.coode.cloud.ui.CloudSwingComponent;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+
+import org.coode.cloud.model.AbstractCloudModel;
+import org.coode.cloud.ui.CloudSwingComponent;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -49,29 +54,33 @@ public class TestCloud {
 
     public static AbstractCloudModel<String> model = new AbstractCloudModel<String>(){
 
+        @Override
         public void dataChanged() {
         }
 
+        @Override
         public Set<String> getEntities() {
             System.out.println("TestCloud.getEntities");
-            Set<String> strings = new HashSet<String>();
+            Set<String> strings = new HashSet<>();
             strings.add("Monkey");
             strings.add("Turn");
             strings.add("DoodahChimps");
             return strings;
         }
 
+        @Override
         public String getEntity(String text) {
             return text;
         }
 
+        @Override
         protected int calculateValue(String entity) {
             return entity.length() + 100;
         }
     };
 
     public static void main(String[] args) {
-        cloud = new CloudSwingComponent<String>(model);
+        cloud = new CloudSwingComponent<>(model);
         JFrame f = new JFrame("Test Cloud");
         f.getContentPane().setPreferredSize(new Dimension(100, 100));
         f.getContentPane().setLayout(new BorderLayout());
@@ -80,16 +89,19 @@ public class TestCloud {
 
         	private static final long serialVersionUID = -17394883027977876L;
 
-			public void actionPerformed(ActionEvent actionEvent) {
+			@Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 cloud.doLayout(true);
             }
         }), BorderLayout.NORTH);
         f.validate();
         f.setVisible(true);
         f.addWindowListener(new WindowAdapter(){
+            @Override
             public void windowClosed(WindowEvent windowEvent) {
                 System.exit(0);
             }
+            @Override
             public void windowClosing(WindowEvent windowEvent) {
                 System.exit(0);
             }

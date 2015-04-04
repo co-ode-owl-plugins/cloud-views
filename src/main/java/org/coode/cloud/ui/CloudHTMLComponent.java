@@ -1,20 +1,30 @@
 package org.coode.cloud.ui;
 
-import org.coode.cloud.model.CloudModel;
-import org.coode.cloud.ui.CloudHTMLRenderer;
-import org.coode.cloud.view.SelectionListener;
-import org.apache.log4j.Logger;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.io.IOException;
+import java.io.PipedReader;
+import java.io.PipedWriter;
+import java.io.PrintWriter;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.RepaintManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
-import java.awt.print.Printable;
-import java.awt.print.PageFormat;
-import java.awt.*;
-import java.util.*;
-import java.io.*;
+
+import org.apache.log4j.Logger;
+import org.coode.cloud.model.CloudModel;
+import org.coode.cloud.view.SelectionListener;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -52,23 +62,24 @@ public class CloudHTMLComponent<O> extends JEditorPane implements CloudComponent
 
 	private static final long serialVersionUID = -4479351166624892469L;
 
-	private final Logger logger = Logger.getLogger(this.getClass());
+	protected final Logger logger = Logger.getLogger(this.getClass());
 
-    private CloudModel<O> model;
+	protected CloudModel<O> model;
 
     private O currentSelection;
 
     private boolean layoutRequired = false;
 
-    private Set<SelectionListener<O>> listeners = new HashSet<SelectionListener<O>>();
+    private Set<SelectionListener<O>> listeners = new HashSet<>();
 
     private HTMLEditorKit eKit = new HTMLEditorKit();
 
-    private CloudHTMLRenderer<O> renderer;
+    protected CloudHTMLRenderer<O> renderer;
 
-    private PrintWriter w; // for the renderer thread to write into
+    protected PrintWriter w; // for the renderer thread to write into
 
     private HyperlinkListener linkListener = new HyperlinkListener(){
+        @Override
         public void hyperlinkUpdate(HyperlinkEvent event) {
             if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 notifySelectionChanged(model.getEntity(event.getDescription())); // messy - just uses the rendered text
@@ -80,7 +91,7 @@ public class CloudHTMLComponent<O> extends JEditorPane implements CloudComponent
 
         this.model = model;
 
-        renderer = new CloudHTMLRenderer<O>(model);
+        renderer = new CloudHTMLRenderer<>(model);
 
         setEditable(false);
 
@@ -89,6 +100,7 @@ public class CloudHTMLComponent<O> extends JEditorPane implements CloudComponent
         doLayout(true);
     }
 
+    @Override
     public void doLayout(boolean recreateLabels) {
         if (isShowing()) {
             if (currentSelection != null) {
@@ -98,16 +110,14 @@ public class CloudHTMLComponent<O> extends JEditorPane implements CloudComponent
             Runnable generateHTML = getRendererProcess();
 
             if (generateHTML != null){
-                try {
-                    PipedReader r = new PipedReader();
+                try (PipedReader r = new PipedReader()){
                     w = new PrintWriter(new PipedWriter(r));
                     new Thread(generateHTML).start();
                     HTMLDocument htmlDoc = (HTMLDocument)eKit.createDefaultDocument();
                     setContentType("text/html");
                     eKit.read(r, htmlDoc, 0);
                     setDocument(htmlDoc);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     logger.error(e);
                 }
             }
@@ -122,6 +132,7 @@ public class CloudHTMLComponent<O> extends JEditorPane implements CloudComponent
         }
     }
 
+    @Override
     public void clearLabelCache() {
         //@@TODO implement
     }
@@ -132,6 +143,7 @@ public class CloudHTMLComponent<O> extends JEditorPane implements CloudComponent
      */
     private Runnable getRendererProcess() {
         return new Runnable(){
+            @Override
             public void run() {
                 try {
                     renderer.render(w);
@@ -144,6 +156,7 @@ public class CloudHTMLComponent<O> extends JEditorPane implements CloudComponent
         };
     }
 
+    @Override
     public void paint(Graphics graphics) {
         if (layoutRequired){
             doLayout(true);
@@ -151,22 +164,25 @@ public class CloudHTMLComponent<O> extends JEditorPane implements CloudComponent
         super.paint(graphics);
     }
 
-    public CloudHTMLRenderer getRenderer(){
+    public CloudHTMLRenderer<O> getRenderer(){
         return renderer;
     }
 
     /**
      * Recreate the view from the model - eg if the threshold or model have changed
      */
+    @Override
     public final void refill(int threshold) {
         renderer.setThreshold(threshold);
         doLayout(true);
     }
 
+    @Override
     public final void refill(){
         refill(renderer.getThreshold());
     }
 
+    @Override
     public void setSelection(O newSelection) {
         currentSelection = newSelection;
         renderer.setSelection(newSelection);
@@ -174,6 +190,7 @@ public class CloudHTMLComponent<O> extends JEditorPane implements CloudComponent
         scrollToSelected();
     }
 
+    @Override
     public O getSelection(){
         return currentSelection;
     }
@@ -182,26 +199,32 @@ public class CloudHTMLComponent<O> extends JEditorPane implements CloudComponent
         // @@TODO implement
     }
 
+    @Override
     public Dimension getPreferredScrollableViewportSize() {
         return new Dimension(300, 0);
     }
 
+    @Override
     public int getScrollableUnitIncrement(Rectangle rectangle, int i, int i1) {
         return 10;
     }
 
+    @Override
     public int getScrollableBlockIncrement(Rectangle rectangle, int i, int i1) {
         return 20;
     }
 
+    @Override
     public boolean getScrollableTracksViewportWidth() {
         return true;
     }
 
+    @Override
     public boolean getScrollableTracksViewportHeight() {
         return false;
     }
 
+    @Override
     public int print(Graphics g, PageFormat pf, int pageIndex) {
         Graphics2D g2 = (Graphics2D) g;
 
@@ -241,15 +264,17 @@ public class CloudHTMLComponent<O> extends JEditorPane implements CloudComponent
         }
     }
 
+    @Override
     public void addSelectionListener(SelectionListener<O> l){
         listeners.add(l);
     }
 
+    @Override
     public void removeSelectionListener(SelectionListener<O> l){
         listeners.remove(l);
     }
 
-    private void notifySelectionChanged(O entity) {
+    protected void notifySelectionChanged(O entity) {
         for (SelectionListener<O> l : listeners){
             l.selectionChanged(entity);
         }
@@ -257,38 +282,47 @@ public class CloudHTMLComponent<O> extends JEditorPane implements CloudComponent
 
 //////////// wrap CloudHTMLRenderer
 
+    @Override
     public boolean requiresRedraw() {
         return layoutRequired;
     }
 
+    @Override
     public int getZoom() {
         return renderer.getZoom();
     }
 
+    @Override
     public void setZoom(int value) {
         renderer.setZoom(value);
     }
 
+    @Override
     public Comparator<? super O> getComparator() {
         return renderer.getComparator();
     }
 
+    @Override
     public void setComparator(Comparator<? super O> comparator) {
         renderer.setComparator(comparator);
     }
 
+    @Override
     public boolean isNormalised() {
         return renderer.getNormalise();
     }
 
+    @Override
     public void setNormalise(boolean normalise) {
         renderer.setNormalise(normalise);
     }
 
+    @Override
     public JComponent getComponent() {
         return this;
     }
 
+    @Override
     public int getThreshold() {
         return renderer.getThreshold();
     }

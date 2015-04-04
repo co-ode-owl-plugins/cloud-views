@@ -1,11 +1,11 @@
 package org.coode.cloud.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.protege.editor.owl.model.OWLModelManager;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -45,8 +45,9 @@ public abstract class AbstractClassCloudModel extends AbstractOWLCloudModel<OWLC
         super(mngr);
     }
 
+    @Override
     public Set<OWLClass> getEntities() {
-        Set<OWLClass> clses = new HashSet<OWLClass>();
+        Set<OWLClass> clses = new HashSet<>();
         for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
             clses.addAll(ont.getClassesInSignature());
         }

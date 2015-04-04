@@ -1,14 +1,19 @@
 package org.coode.cloud.view;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import org.coode.cloud.model.AbstractClassCloudModel;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.util.*;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -47,7 +52,8 @@ public class IntervalRank extends AbstractClassCloudView {
 
 	private static final long serialVersionUID = 2413080726115916638L;
 
-	protected OWLCloudModel createModel() {
+	@Override
+    protected OWLCloudModel<OWLClass> createModel() {
         return new IntervalRankModel(getOWLModelManager());
     }
 
@@ -55,32 +61,35 @@ public class IntervalRank extends AbstractClassCloudView {
     class IntervalRankModel extends AbstractClassCloudModel {
         private int m;  //maximal height
         private int maxRank = 0;    //maximal IntervalRank
-        protected OWLObjectHierarchyProvider provider;
+        protected OWLObjectHierarchyProvider<OWLClass> provider;
         protected HashMap<OWLClass, Integer> heights;
         protected HashMap<OWLClass, Integer> depths;
         protected HashMap<OWLClass, Integer> intervalRanks;
-        LinkedList<OWLClass>[] reverseIntervalRanks;    //list of all class in each
+        List<LinkedList<OWLClass>> reverseIntervalRanks;    //list of all class in each
 
-        HashSet<OWLClass> alreadyReturned = new HashSet<OWLClass>();  //list of all classes already returned to the current user
+        HashSet<OWLClass> alreadyReturned = new HashSet<>();  //list of all classes already returned to the current user
 
         protected IntervalRankModel(OWLModelManager mngr) {
             super(mngr);
         }
 
+        @Override
         public Set<OWLClass> getEntities() {
             return intervalRanks.keySet();
         }
 
-        public void activeOntologiesChanged(Set<OWLOntology> ontologies) throws OWLException {
+        @Override
+        public void activeOntologiesChanged(Set<OWLOntology> ontologies) {
             provider = getOWLModelManager().getOWLHierarchyManager().getOWLClassHierarchyProvider();
-            heights =       new HashMap<OWLClass, Integer>();
-            depths =        new HashMap<OWLClass, Integer>();
-            intervalRanks = new HashMap<OWLClass, Integer>();
-            computeHeights(getOWLModelManager().getActiveOntology());   //build data structure of heights and depths
+            heights =       new HashMap<>();
+            depths =        new HashMap<>();
+            intervalRanks = new HashMap<>();
+            computeHeights();   //build data structure of heights and depths
             computeIntervalRank();  //calcuates the interval rank of each class in the ontology
         }
 
-        protected int getValueForEntity(OWLClass entity) throws OWLException {
+        @Override
+        protected int getValueForEntity(OWLClass entity) {
             return intervalRanks.get(entity);
         }
 
@@ -88,7 +97,7 @@ public class IntervalRank extends AbstractClassCloudView {
          * recursively descend into the class hierarchy, counting height as we go down (and recording it as we descend)
          * also, as we return, return the maximal number of subclasses (depth) as we go up. Not the maximal height = M.
          */
-        private void computeHeights(OWLOntology ontology) throws OWLException {
+        private void computeHeights() {
             OWLClass thing = getOWLModelManager().getOWLDataFactory().getOWLThing();
 
             recursiveHeights(thing, -1);
@@ -131,16 +140,16 @@ public class IntervalRank extends AbstractClassCloudView {
             }
 
             //reverse lookup data structure for interval rank
-            reverseIntervalRanks = new LinkedList[maxRank + 1];
-            for (int i = 0; i < reverseIntervalRanks.length; i++) {
-                reverseIntervalRanks[i] = new LinkedList<OWLClass>(); //init all lists
+            reverseIntervalRanks = new ArrayList<>(maxRank + 1);
+            for (int i = 0; i < maxRank+1; i++) {
+                reverseIntervalRanks.add(new LinkedList<OWLClass>()); //init all lists
             }
 
             //restart iterator and build reverse data structure
             recordedClassesIterator = heights.keySet().iterator();
             while (recordedClassesIterator.hasNext()) {
                 OWLClass owlClass = recordedClassesIterator.next();
-                reverseIntervalRanks[intervalRanks.get(owlClass)].add(owlClass);
+                reverseIntervalRanks.get(intervalRanks.get(owlClass)).add(owlClass);
             }
 
         }
@@ -157,11 +166,10 @@ public class IntervalRank extends AbstractClassCloudView {
          * This can later be used to draw an Excel graph of the distribution profile of each evaluated ontology.
          */
         public int[] getOntologyRankDistributionProfile() {
-            int[] rankDistribution = new int[reverseIntervalRanks.length];
+            int[] rankDistribution = new int[reverseIntervalRanks.size()];
 
-            for (int i = 0; i < reverseIntervalRanks.length; i++) {
-                LinkedList<OWLClass> reverseIntervalRank = reverseIntervalRanks[i];
-                rankDistribution[i] = reverseIntervalRank.size();
+            for (int i = 0; i < reverseIntervalRanks.size(); i++) {
+                rankDistribution[i] = reverseIntervalRanks.get(i).size();
             }
 
             return rankDistribution;
@@ -179,7 +187,7 @@ public class IntervalRank extends AbstractClassCloudView {
 
             while (returnedClass == null && maximumRank > 0) {
                 maximumRank--;
-                Iterator<OWLClass> currentRankIterator = reverseIntervalRanks[maximumRank].iterator();
+                Iterator<OWLClass> currentRankIterator = reverseIntervalRanks.get(maximumRank).iterator();
 
                 while (currentRankIterator.hasNext()) {
                     returnedClass = currentRankIterator.next();

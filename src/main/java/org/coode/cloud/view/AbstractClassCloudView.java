@@ -1,5 +1,7 @@
 package org.coode.cloud.view;
 
+import org.semanticweb.owlapi.model.OWLClass;
+
 /*
  * Copyright (C) 2007, University of Manchester
  *
@@ -32,14 +34,11 @@ package org.coode.cloud.view;
  * Date: Sep 26, 2006<br><br>
  * <p/>
  */
-public abstract class AbstractClassCloudView extends AbstractCloudView {
+public abstract class AbstractClassCloudView extends AbstractCloudView<OWLClass> {
 
 	private static final long serialVersionUID = -3770469508306941079L;
 
-	public void initialiseView() throws Exception {
-        super.initialiseView();
-    }
-
+    @Override
     protected final boolean isOWLClassView() {
         return true;
     }

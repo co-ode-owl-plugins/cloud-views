@@ -1,13 +1,12 @@
 package org.coode.cloud.view;
 
+import java.util.Set;
+
 import org.coode.cloud.model.AbstractClassCloudModel;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.util.Set;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -45,7 +44,8 @@ public class ClassesByDepth extends AbstractClassCloudView {
 
 	private static final long serialVersionUID = 4523839568986281278L;
 
-	protected OWLCloudModel createModel() {
+	@Override
+    protected OWLCloudModel<OWLClass> createModel() {
         return new ClassesByDepth.ClassesByDepthModel(getOWLModelManager());
     }
 
@@ -55,12 +55,14 @@ public class ClassesByDepth extends AbstractClassCloudView {
             super(mngr);
         }
 
-        protected int getValueForEntity(OWLClass entity) throws OWLException {
+        @Override
+        protected int getValueForEntity(OWLClass entity) {
             Set<OWLClass> ancestors = getOWLModelManager().getOWLHierarchyManager().getOWLClassHierarchyProvider().getAncestors(entity);
             return ancestors.size();
         }
 
-        public void activeOntologiesChanged(Set<OWLOntology> activeOntologies) throws OWLException {
+        @Override
+        public void activeOntologiesChanged(Set<OWLOntology> activeOntologies) {
         }
     }
 }

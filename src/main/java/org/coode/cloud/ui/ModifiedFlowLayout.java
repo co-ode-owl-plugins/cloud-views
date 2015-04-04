@@ -1,6 +1,10 @@
 package org.coode.cloud.ui;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Insets;
 
 /*
  * Copyright (C) 2007, University of Manchester
@@ -54,11 +58,13 @@ public class ModifiedFlowLayout extends FlowLayout
         super(align, hgap, vgap);
     }
 
+    @Override
     public Dimension minimumLayoutSize(Container target)
     {
         return computeSize(target, false);
     }
 
+    @Override
     public Dimension preferredLayoutSize(Container target)
     {
         return computeSize(target, true);

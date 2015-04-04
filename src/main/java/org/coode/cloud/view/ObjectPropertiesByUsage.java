@@ -6,7 +6,6 @@ import java.util.Set;
 import org.coode.cloud.model.AbstractOWLCloudModel;
 import org.coode.cloud.model.OWLCloudModel;
 import org.protege.editor.owl.model.OWLModelManager;
-import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.parameters.Imports;
@@ -43,12 +42,12 @@ import org.semanticweb.owlapi.model.parameters.Imports;
  * Date: Sep 26, 2006<br><br>
  * <p/>
  */
-public class ObjectPropertiesByUsage extends AbstractCloudView {
+public class ObjectPropertiesByUsage extends AbstractCloudView<OWLObjectProperty> {
 
 	private static final long serialVersionUID = 6289540835591242882L;
 
 	@Override
-    protected OWLCloudModel createModel() {
+    protected OWLCloudModel<OWLObjectProperty> createModel() {
         return new PropertiesByUsageModel(getOWLModelManager());
     }
 
@@ -65,7 +64,7 @@ public class ObjectPropertiesByUsage extends AbstractCloudView {
 
         @Override
         public Set<OWLObjectProperty> getEntities() {
-            Set<OWLObjectProperty> props = new HashSet<OWLObjectProperty>();
+            Set<OWLObjectProperty> props = new HashSet<>();
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
                 props.addAll(ont.getObjectPropertiesInSignature());
             }
@@ -73,11 +72,11 @@ public class ObjectPropertiesByUsage extends AbstractCloudView {
         }
 
         @Override
-        public void activeOntologiesChanged(Set<OWLOntology> ontologies) throws OWLException {
+        public void activeOntologiesChanged(Set<OWLOntology> ontologies) {
         }
 
         @Override
-        protected int getValueForEntity(OWLObjectProperty entity) throws OWLException {
+        protected int getValueForEntity(OWLObjectProperty entity) {
             int usage = 0;
             for (OWLOntology ont : getOWLModelManager().getActiveOntologies()) {
                 usage += ont.getReferencingAxioms(entity, Imports.EXCLUDED)
