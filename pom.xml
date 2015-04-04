@@ -7,12 +7,7 @@
     <artifactId>co-ode-owl-plugins</artifactId>
     <version>4.0.0-SNAPSHOT</version>
   </parent>
-  <groupId>net.sourceforge.owlapi</groupId>
   <artifactId>cloud-views</artifactId>
-  <version>4.0.0-SNAPSHOT</version>
   <name>cloud-views</name>
-  <url>http://maven.apache.org</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+  <url>https://github.com/co-ode-owl-plugins/cloud-views</url>
 </project>
